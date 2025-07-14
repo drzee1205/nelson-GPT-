@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy package files first for better caching
 COPY nelson-gpt-frontend/package*.json ./nelson-gpt-frontend/
-COPY nelson-gpt-backend/requirements-cpu.txt ./nelson-gpt-backend/
+COPY nelson-gpt-backend/requirements-cpu.txt ./nelson-gpt-backend/requirements-cpu.txt
 
 # Install pnpm globally and verify installation
 RUN npm install -g pnpm && \
@@ -30,6 +30,7 @@ WORKDIR /app/nelson-gpt-backend
 RUN python3 -m venv venv && \
     . venv/bin/activate && \
     pip install --upgrade pip && \
+    ls -la && \
     pip install -r requirements-cpu.txt
 
 # Copy all source code

@@ -3,13 +3,13 @@ nixPkgs = ['nodejs_20', 'python311', 'python311Packages.pip']
 
 [phases.install]
 cmds = [
-    'cd nelson-gpt-frontend && npm install -g pnpm && export PATH=$(npm bin -g):$PATH && pnpm install',
+    'cd nelson-gpt-frontend && npm install -g pnpm && $(npm bin -g)/pnpm install',
     'cd nelson-gpt-backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt'
 ]
 
 [phases.build]
 cmds = [
-    'cd nelson-gpt-frontend && pnpm run build',
+    'cd nelson-gpt-frontend && $(npm bin -g)/pnpm run build',
     'cp -r nelson-gpt-frontend/dist/* nelson-gpt-backend/src/static/'
 ]
 

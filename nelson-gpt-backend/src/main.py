@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import logging
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -17,8 +18,15 @@ from src.routes.chat import chat_bp
 from src.routes.rag import rag_bp
 from src.routes.frontend import frontend_bp
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
-app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
+
+# Configuration from environment variables
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+app.config['FLASK_ENV'] = os.environ.get('FLASK_ENV', 'production')
 
 # Enable CORS for all routes
 CORS(app, origins="*")
@@ -30,12 +38,28 @@ app.register_blueprint(rag_bp, url_prefix='/api')
 app.register_blueprint(frontend_bp)
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(os.path.dirname(__file__), 'database', 'app.db')}"
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    # Handle Railway PostgreSQL URL format
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    # Default to SQLite for development
+    db_path = os.path.join(os.path.dirname(__file__), 'database', 'app.db')
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+# Create database tables
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+        logger.info("Database tables created successfully")
+    except Exception as e:
+        logger.error(f"Error creating database tables: {e}")
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -55,8 +79,30 @@ def serve(path):
 
 @app.route('/api/health')
 def health_check():
-    return jsonify({"status": "healthy", "message": "Nelson-GPT Backend is running"})
+    """Enhanced health check endpoint for Railway monitoring"""
+    try:
+        # Test database connection
+        with app.app_context():
+            db.engine.execute('SELECT 1')
+        
+        return jsonify({
+            "status": "healthy", 
+            "message": "Nelson-GPT Backend is running",
+            "database": "connected",
+            "environment": app.config.get('FLASK_ENV', 'unknown')
+        }), 200
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
+        return jsonify({
+            "status": "unhealthy",
+            "message": "Nelson-GPT Backend has issues",
+            "error": str(e)
+        }), 503
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
-
+    port = int(os.environ.get('PORT', 5000))
+    host = os.environ.get('HOST', '0.0.0.0')
+    debug = app.config['FLASK_ENV'] == 'development'
+    
+    logger.info(f"Starting Nelson-GPT on {host}:{port} (debug={debug})")
+    app.run(host=host, port=port, debug=debug)

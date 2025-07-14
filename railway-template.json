@@ -1,0 +1,56 @@
+{
+  "name": "Nelson-GPT - Smart Pediatric Assistant",
+  "description": "A production-ready PWA for pediatric healthcare professionals with AI-powered insights from the Nelson Textbook of Pediatrics",
+  "tags": ["medical", "ai", "pwa", "pediatrics", "healthcare", "react", "flask"],
+  "repository": "https://github.com/your-username/nelson-gpt",
+  "services": [
+    {
+      "name": "nelson-gpt",
+      "type": "web",
+      "plan": "hobby",
+      "env": {
+        "MISTRAL_API_KEY": {
+          "description": "Your Mistral AI API key for streaming responses",
+          "required": true
+        },
+        "HUGGINGFACE_API_KEY": {
+          "description": "Your Hugging Face API key for embeddings",
+          "required": true
+        },
+        "SUPABASE_URL": {
+          "description": "Your Supabase project URL for data storage",
+          "required": true
+        },
+        "SUPABASE_KEY": {
+          "description": "Your Supabase API key",
+          "required": true
+        },
+        "FLASK_ENV": {
+          "description": "Flask environment",
+          "default": "production"
+        },
+        "PORT": {
+          "description": "Port for the application",
+          "default": "5000"
+        }
+      },
+      "build": {
+        "commands": [
+          "cd nelson-gpt-frontend && npm install -g pnpm && pnpm install && pnpm run build",
+          "cp -r nelson-gpt-frontend/dist/* nelson-gpt-backend/src/static/",
+          "cd nelson-gpt-backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
+        ]
+      },
+      "start": {
+        "command": "cd nelson-gpt-backend && source venv/bin/activate && python src/main.py"
+      },
+      "healthcheck": {
+        "path": "/api/health",
+        "timeout": 30
+      }
+    }
+  ],
+  "volumes": [],
+  "databases": []
+}
+

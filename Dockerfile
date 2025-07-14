@@ -12,9 +12,8 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy package files first for better caching
-COPY nelson-gpt-frontend/package*.json ./nelson-gpt-frontend/
-COPY nelson-gpt-backend/requirements-cpu.txt ./nelson-gpt-backend/requirements-cpu.txt
+# Copy all source code first
+COPY . .
 
 # Install pnpm globally and verify installation
 RUN npm install -g pnpm && \
@@ -27,15 +26,14 @@ RUN pnpm install
 
 # Install backend dependencies (using CPU-only requirements)
 WORKDIR /app/nelson-gpt-backend
-RUN python3 -m venv venv && \
+RUN echo "=== Files in current directory ===" && \
+    ls -la && \
+    echo "=== Creating virtual environment ===" && \
+    python3 -m venv venv && \
     . venv/bin/activate && \
     pip install --upgrade pip && \
-    ls -la && \
+    echo "=== Installing from requirements-cpu.txt ===" && \
     pip install -r requirements-cpu.txt
-
-# Copy all source code
-WORKDIR /app
-COPY . .
 
 # Build frontend
 WORKDIR /app/nelson-gpt-frontend

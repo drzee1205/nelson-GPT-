@@ -1,0 +1,205 @@
+/* Mobile-First Responsive Design for Nelson-GPT */
+
+/* Base mobile styles */
+@media screen and (max-width: 768px) {
+  /* Ensure full viewport usage */
+  html, body {
+    height: 100vh;
+    height: -webkit-fill-available;
+    overflow-x: hidden;
+  }
+  
+  #root {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+  
+  /* Touch-friendly button sizes */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+  
+  /* Improved text readability */
+  body {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  /* Sidebar optimizations */
+  .sidebar {
+    width: 280px !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  /* Chat input optimizations */
+  .chat-input {
+    padding: 12px 16px;
+    font-size: 16px;
+    border-radius: 24px;
+    min-height: 48px;
+  }
+  
+  /* Message bubbles */
+  .message-bubble {
+    max-width: 85%;
+    margin: 8px 0;
+    padding: 12px 16px;
+    border-radius: 18px;
+  }
+  
+  /* Drug calculator form */
+  .drug-calculator input,
+  .drug-calculator select {
+    padding: 14px 16px;
+    font-size: 16px;
+    border-radius: 12px;
+    min-height: 48px;
+  }
+  
+  /* Library cards */
+  .library-card {
+    margin: 8px 0;
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  /* Header adjustments */
+  .header {
+    padding: 12px 16px;
+    height: 60px;
+  }
+  
+  /* Safe area adjustments for notched devices */
+  .header {
+    padding-top: max(12px, env(safe-area-inset-top));
+  }
+  
+  .chat-input-container {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  
+  /* Prevent horizontal scroll */
+  .container {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Optimize scrolling */
+  .scrollable {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Loading states */
+  .loading-spinner {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Gesture improvements */
+  .swipeable {
+    touch-action: pan-x pan-y;
+  }
+  
+  /* Typography scaling */
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  
+  /* Spacing adjustments */
+  .mobile-padding {
+    padding: 16px;
+  }
+  
+  .mobile-margin {
+    margin: 16px 0;
+  }
+}
+
+/* iPhone specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  .ios-safe-area {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Android specific optimizations */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+  .android-keyboard-adjust {
+    height: calc(100vh - env(keyboard-inset-height, 0px));
+  }
+}
+
+/* Landscape mode adjustments */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  .header {
+    height: 48px;
+    padding: 8px 16px;
+  }
+  
+  .sidebar {
+    width: 240px !important;
+  }
+  
+  .chat-input-container {
+    padding: 8px 16px;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .icon {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #121212;
+    --bg-secondary: #1E1E1E;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B0B0B0;
+    --border-color: #262626;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus improvements for accessibility */
+@media screen and (max-width: 768px) {
+  button:focus,
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: 2px solid #007AFF;
+    outline-offset: 2px;
+  }
+  
+  /* Remove default focus styles */
+  button:focus:not(:focus-visible),
+  input:focus:not(:focus-visible),
+  textarea:focus:not(:focus-visible),
+  select:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+

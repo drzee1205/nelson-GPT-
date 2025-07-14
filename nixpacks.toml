@@ -14,4 +14,4 @@ cmds = [
 ]
 
 [start]
-cmd = 'nelson-gpt-backend/venv/bin/python nelson-gpt-backend/src/main.py'
+cmd = 'PYTHONPATH=/app/nelson-gpt-backend /app/nelson-gpt-backend/venv/bin/python /app/nelson-gpt-backend/src/main.py'

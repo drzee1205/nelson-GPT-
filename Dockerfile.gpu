@@ -1,4 +1,10 @@
-FROM node:20-slim
+FROM nvidia/cuda:12.6-devel-ubuntu22.04
+
+# Install Node.js
+RUN apt-get update && apt-get install -y \
+    curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
 
 # Set working directory
 WORKDIR /app
@@ -14,7 +20,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy package files first for better caching
 COPY nelson-gpt-frontend/package*.json ./nelson-gpt-frontend/
-COPY nelson-gpt-backend/requirements-cpu.txt ./nelson-gpt-backend/
+COPY nelson-gpt-backend/requirements.txt ./nelson-gpt-backend/
 
 # Install pnpm globally and verify installation
 RUN npm install -g pnpm && \
@@ -25,12 +31,12 @@ RUN npm install -g pnpm && \
 WORKDIR /app/nelson-gpt-frontend
 RUN pnpm install
 
-# Install backend dependencies (using CPU-only requirements)
+# Install backend dependencies (with CUDA support)
 WORKDIR /app/nelson-gpt-backend
 RUN python3 -m venv venv && \
     . venv/bin/activate && \
     pip install --upgrade pip && \
-    pip install -r requirements-cpu.txt
+    pip install -r requirements.txt
 
 # Copy all source code
 WORKDIR /app
@@ -51,6 +57,5 @@ WORKDIR /app/nelson-gpt-backend
 EXPOSE 8000
 
 # Start command
-# Note: This uses CPU-only PyTorch. For GPU support, use requirements.txt instead of requirements-cpu.txt
-# and consider using nvidia/cuda base image
+# This version includes CUDA support for GPU acceleration
 CMD ["sh", "-c", ". venv/bin/activate && python src/main.py"]
